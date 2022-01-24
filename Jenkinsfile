@@ -36,6 +36,13 @@ pipeline {
       } 
    }
 
+ stage('package and artifacts'){
+      steps {
+         sh 'mvn clean package -DskipTests=true'
+         archiveArtifacts allowEmptyArchive: true, artifacts: 'addressbook_main/target/** *?/*.war' 
+      
+      }
+   }
 
 
 
@@ -89,14 +96,14 @@ node('node'){
       }
    }
    
-      stage('package and artifacts'){
+  stage('package and artifacts'){
       try {
          sh "${mvnHome}/bin/mvn clean package -DskipTests=true"
          archiveArtifacts allowEmptyArchive: true, artifacts: 'addressbook_main/target/** *?/*.war' 
       } catch(err) {
          sh "echo error in generating artifacts"
       }
-   }
+   }    
 
    stage ('docker build and push'){
       try {
