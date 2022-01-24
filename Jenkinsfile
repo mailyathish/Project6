@@ -1,3 +1,63 @@
+pipeline {
+    agent any
+	
+	  tools
+    {
+       maven "Maven"
+    }
+
+    stages {
+    stage('checkout') {
+           steps {
+             
+                git branch: 'main', url: 'https://github.com/mailyathish/Project6.git'
+             
+          }
+        }
+
+      stage('Build Application'){
+      steps {
+       sh 'mvn -B -DskipTests clean package'
+      // sh "${mvnHome}/bin/mvn clean test surefire-report:report"
+      }
+   }
+
+    stage('maven test'){
+      steps {
+      sh 'mvn clean test surefire-report:report'
+      } 
+    }
+
+   stage('test case and report'){
+      steps{
+         echo "executing test cases"
+         junit allowEmptyResults: true, testResults: 'addressbook_main/target/surefire-reports/*.xml'
+         publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'addressbook_main/target/site', reportFiles: 'surefire-report.html', reportName: 'SureFireReportHTML', reportTitles: ''])
+      } 
+   }
+
+
+
+
+
+   }
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 def mvnHome
 
 node('node'){
@@ -32,7 +92,7 @@ node('node'){
       stage('package and artifacts'){
       try {
          sh "${mvnHome}/bin/mvn clean package -DskipTests=true"
-         archiveArtifacts allowEmptyArchive: true, artifacts: 'addressbook_main/target/**/*.war'
+         archiveArtifacts allowEmptyArchive: true, artifacts: 'addressbook_main/target/** *?/*.war' 
       } catch(err) {
          sh "echo error in generating artifacts"
       }
@@ -76,3 +136,4 @@ node('node'){
       }
    }
 }
+*/
